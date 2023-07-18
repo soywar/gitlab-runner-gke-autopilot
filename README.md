@@ -4,7 +4,7 @@ This document details deployment of the [GitLab Runner](https://docs.gitlab.com/
 
 While most elements work without modification, some Autopilot-specific changes are necessary.
 
-## Changes to default [`values.yaml`](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/main/values.yaml)
+## Changes to default [`values.yaml`](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/779d45cd05abba6ea8b056380401bcfde2dbf51f/values.yaml)
 
 ### Required changes
 
@@ -99,4 +99,4 @@ Subsequent updates to `values.yaml` configuration can be propagated with `helm u
 
 Run [computational pipelines](https://en.wikipedia.org/wiki/Pipeline_(computing)) with [GitLab CI/CD](https://docs.gitlab.com/ee/ci) defined in a repository's [`.gitlab-ci.yml`](https://docs.gitlab.com/ee/ci/yaml/gitlab_ci_yaml.html).
 
-Resources can be specified on a per-job basis using the `KUBERNETES_` [container override variables](https://docs.gitlab.com/runner/executors/kubernetes.html#overwriting-container-resources).
+Resources can be specified on a per-job basis using the `KUBERNETES_` [container override variables](https://docs.gitlab.com/runner/executors/kubernetes.html#overwrite-container-resources).
