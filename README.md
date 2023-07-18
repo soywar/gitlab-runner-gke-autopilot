@@ -10,53 +10,55 @@ While most elements work without modification, some Autopilot-specific changes a
 
 Below are the minimum number of changes to the default `values.yaml` to run in GKE Autopilot.
 
-* Set `gitlabUrl` to URL of instance ([~L50](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/main/values.yaml#L51)):
+* Set `gitlabUrl` to URL of instance ([~L52](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/779d45cd05abba6ea8b056380401bcfde2dbf51f/values.yaml#L52)):
 
-    `gitlabUrl: <URL to base GitLab install>`
+      `gitlabUrl: <URL to base GitLab install>`
 
-* Set `runnerRegistrationToken` for project/group/subgroup ([~L55](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/main/values.yaml#L57)):
+* Set `runnerRegistrationToken` for project/group/subgroup ([~L58](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/779d45cd05abba6ea8b056380401bcfde2dbf51f/values.yaml#L58)):
 
-    `runnerRegistrationToken: "<runner registration token>"`
+      `runnerRegistrationToken: "<runner registration token>"`
 
-* Enable rbac ([~L140](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/main/values.yaml#L139)):
+* Enable rbac ([~L141](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/779d45cd05abba6ea8b056380401bcfde2dbf51f/values.yaml#L141)):
 
-       rbac:
-         create: true
+      rbac:
+        create: true
 
-* Define a node selector to ensure executor lives in a [separate workload](https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-provisioning#workload_separation) to avoid preempting of the runner pod by jobs or cluster services ([~L620](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/main/values.yaml#L617)):
+* Define a node selector to ensure executor lives in a [separate workload](https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-provisioning#workload_separation) to avoid preempting of the runner pod by jobs or cluster services ([~L463](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/779d45cd05abba6ea8b056380401bcfde2dbf51f/values.yaml#L463)):
 
-       nodeSelector:
-           group: autopilot-executor
+      nodeSelector:
+        group: autopilot-executor
 
-* Set the corresponding toleration ([~L625](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/main/values.yaml#L625)):
+* Set the corresponding toleration ([~L471](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/779d45cd05abba6ea8b056380401bcfde2dbf51f/values.yaml#L471)):
 
-       tolerations:
-         - key: group
-           operator: Equal
-           value: autopilot-executor
-           effect: NoSchedule
+      tolerations:
+        - key: group
+          operator: Equal
+          value: autopilot-executor
+          effect: NoSchedule
 
 ### Recommended changes
 
-* Set runner tag ([~L360](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/main/values.yaml#L358)):
+* Set runner tag ([~L333](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/779d45cd05abba6ea8b056380401bcfde2dbf51f/values.yaml#L333)):
 
         tags: <runner tag>
 
-* Diable running untagged ([~L375](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/main/values.yaml#L374)):
+* Disable running untagged ([~L349](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/779d45cd05abba6ea8b056380401bcfde2dbf51f/values.yaml#L349)):
 
         runUntagged: false
 
-* Increase concurrency ([~L95](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/main/values.yaml#L93)). Each 100 jobs consume approximately 0.25 CPU and 0.25 GB RAM.
+* Increase concurrency ([~L94](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/779d45cd05abba6ea8b056380401bcfde2dbf51f/values.yaml#L94)). Each 100 jobs consume approximately 0.25 CPU and 0.25 GB RAM.
 
-        concurrent: 400
+      concurrent: 400
 
-* Set higher runner pod resources ([~L600](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/main/values.yaml#L601)):
+* Set higher runner pod resources ([~L447](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/779d45cd05abba6ea8b056380401bcfde2dbf51f/values.yaml#L447)):
 
-        resources:
+      resources:
+        requests:
           cpu: 1
           memory: 1Gi
+          ephemeral-storage: 1Gi
 
-* Provide additional updates to job pods config, run all job pods as [spot VMs](https://cloud.google.com/kubernetes-engine/docs/concepts/spot-vms) ([~L315](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/main/values.yaml#L317)):
+* Provide additional updates to job pods config, run all job pods as [spot VMs](https://cloud.google.com/kubernetes-engine/docs/concepts/spot-vms) ([~L313](https://gitlab.com/gitlab-org/charts/gitlab-runner/-/blob/779d45cd05abba6ea8b056380401bcfde2dbf51f/values.yaml#L313)):
 
         config: |
           [[runners]]
@@ -84,11 +86,14 @@ Below are the minimum number of changes to the default `values.yaml` to run in G
 
 Deploy with [helm](https://helm.sh), recommend deploying from [Google Cloud Shell](https://cloud.google.com/shell) after [setting a default kubectl cluster](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl#default_cluster_kubectl):
 
-    helm install gitlab-runner -f values.yaml gitlab/gitlab-runner
+      kubectl create ns gitlab-runner
+      helm repo add gitlab https://charts.gitlab.io
+      helm repo update
+      helm install --namespace gitlab-runner gitlab-runner -f values.yaml gitlab/gitlab-runner
 
-Subsequent updates to `values.yaml` configuration can be propogated with `helm upgrade`:
+Subsequent updates to `values.yaml` configuration can be propagated with `helm upgrade`:
 
-    helm upgrade gitlab-runner -f values.yaml gitlab/gitlab-runner
+      helm upgrade --namespace gitlab-runner gitlab-runner -f values.yaml gitlab/gitlab-runner
 
 ## Usage
 
