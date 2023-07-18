@@ -86,14 +86,14 @@ Below are the minimum number of changes to the default `values.yaml` to run in G
 
 Deploy with [helm](https://helm.sh), recommend deploying from [Google Cloud Shell](https://cloud.google.com/shell) after [setting a default kubectl cluster](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl#default_cluster_kubectl):
 
-      kubectl create ns gitlab-runner
-      helm repo add gitlab https://charts.gitlab.io
-      helm repo update
-      helm install --namespace gitlab-runner gitlab-runner -f values.yaml gitlab/gitlab-runner
+    kubectl create ns gitlab-runner
+    helm repo add gitlab https://charts.gitlab.io
+    helm repo update
+    helm install --namespace gitlab-runner gitlab-runner -f values.yaml gitlab/gitlab-runner
 
 Subsequent updates to `values.yaml` configuration can be propagated with `helm upgrade`:
 
-      helm upgrade --namespace gitlab-runner gitlab-runner -f values.yaml gitlab/gitlab-runner
+    helm upgrade --namespace gitlab-runner gitlab-runner -f values.yaml gitlab/gitlab-runner
 
 ## Usage
 
